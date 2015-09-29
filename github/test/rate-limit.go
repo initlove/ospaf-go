@@ -33,8 +33,8 @@ func gen() {
 
 func readFile() {
 	dataFile := "data/rate-limit.json"
-	ok, dataValue := ospaf.ReadFile(dataFile)
-	if ok {
+	dataValue, err := ospaf.ReadFile(dataFile)
+	if err == nil {
 		valid, rateLimit := github.RateLimitFrom(dataValue)
 		if valid {
 			fmt.Println(rateLimit.Marshal())
