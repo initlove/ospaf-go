@@ -1,7 +1,8 @@
 package ospafLib
 
 import (
-	"fmt"
+	github "../github"
+	//	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -21,22 +22,25 @@ func (account *Account) Init(accountType string, accountUser string, accountPass
 	account.Type = accountType
 	account.User = accountUser
 	account.Password = accountPassword
-	account.Remains = 5000
-	//	account.Remains = -1
+	account.Remains = -1
 
 	url := "https://api.github.com/rate_limit"
-	_, val := account.ReadURL(url, "")
-
-	fmt.Println(val)
+	val, code := account.ReadURL(url, "")
+	if code == 200 {
+		rl, ok := github.RateLimitFrom(val)
+		if ok {
+			account.Remains = rl.Resources.Core.Remaining
+		}
+	}
 }
 
 func (account *Account) GetRemains() int {
 	return account.Remains
 }
 
-func (account *Account) ReadURL(url string, param string) (int, string) {
+func (account *Account) ReadURL(url string, param string) (string, int) {
 	if account.Remains != -1 && account.Remains < 10 {
-		return -1, "System warning: not enough remain access"
+		return "System warning: not enough remain access", -1
 	}
 
 	client := &http.Client{}
@@ -49,13 +53,13 @@ func (account *Account) ReadURL(url string, param string) (int, string) {
 	resp, err := client.Do(req)
 	account.Remains -= 1
 	if err != nil {
-		return -1, "System warning: cannot send get request"
+		return "System warning: cannot send get request", -1
 	}
 	defer resp.Body.Close()
 	resp_body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return -1, "System warning: cannot read the body"
+		return "System warning: cannot read the body", -1
 	}
 
-	return resp.StatusCode, string(resp_body)
+	return string(resp_body), resp.StatusCode
 }

@@ -28,7 +28,7 @@ func (rateLimit *RateLimit) Marshal() string {
 	return string(content)
 }
 
-func RateLimitFrom(value string) (valid bool, rateLimit RateLimit) {
+func RateLimitFrom(value string) (rateLimit RateLimit, valid bool) {
 	err := json.Unmarshal([]byte(value), &rateLimit)
 	if err != nil {
 		valid = false
@@ -36,5 +36,5 @@ func RateLimitFrom(value string) (valid bool, rateLimit RateLimit) {
 		valid = true
 	}
 
-	return valid, rateLimit
+	return rateLimit, valid
 }

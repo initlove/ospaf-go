@@ -7,7 +7,7 @@ import (
 )
 
 func ReadFile(file_url string) (content string, err error) {
-	_, err := os.Stat(file_url)
+	_, err = os.Stat(file_url)
 	if err != nil {
 		content = fmt.Sprintf("Cannot find the file %s.", file_url)
 		return content, err
