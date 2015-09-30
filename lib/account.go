@@ -2,7 +2,7 @@ package ospafLib
 
 import (
 	github "../github"
-	//	"fmt"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -23,9 +23,12 @@ func (account *Account) Init(accountType string, accountUser string, accountPass
 	account.User = accountUser
 	account.Password = accountPassword
 	account.Remains = -1
+}
 
+func (account *Account) Load() {
 	url := "https://api.github.com/rate_limit"
 	val, code := account.ReadURL(url, "")
+	fmt.Println("load account", val)
 	if code == 200 {
 		rl, ok := github.RateLimitFrom(val)
 		if ok {
@@ -39,7 +42,7 @@ func (account *Account) GetRemains() int {
 }
 
 func (account *Account) ReadURL(url string, param string) (string, int) {
-	if account.Remains != -1 && account.Remains < 10 {
+	if url != "https://api.github.com/rate_limit" && account.Remains < 10 {
 		return "System warning: not enough remain access", -1
 	}
 
@@ -51,14 +54,17 @@ func (account *Account) ReadURL(url string, param string) (string, int) {
 		break
 	}
 	resp, err := client.Do(req)
-	account.Remains -= 1
 	if err != nil {
-		return "System warning: cannot send get request", -1
+		return err.Error(), -1
 	}
 	defer resp.Body.Close()
 	resp_body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "System warning: cannot read the body", -1
+		return err.Error(), -1
+	}
+
+	if url != "https://api.github.com/rate_limit" {
+		account.Remains -= 1
 	}
 
 	return string(resp_body), resp.StatusCode

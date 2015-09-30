@@ -2,21 +2,14 @@ package main
 
 import (
 	ospaf "../"
-	"encoding/json"
 	"fmt"
 )
 
 func main() {
 	var account ospaf.Account
-	account.Init("Basic", "golang001", "qwe123456")
+	account.Init("Basic", "fake001", "fake001")
+	account.Load()
 
-	var accounts []ospaf.Account
-	accounts = append(accounts, account)
-	accounts = append(accounts, account)
-	accounts = append(accounts, account)
-	val, _ := json.MarshalIndent(accounts, "", "\t")
-	fmt.Println(string(val))
-	return
 	fmt.Println("Account remaining: ", account.GetRemains())
 	test_user := "initlove"
 	url := fmt.Sprintf("https://api.github.com/users/%s", test_user)

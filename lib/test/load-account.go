@@ -5,9 +5,8 @@ import (
 	"fmt"
 )
 
-func AccountTest(typeA string, userA string, passwordA string) {
-	var account ospaf.Account
-	account.Init(typeA, userA, passwordA)
+func AccountTest(account ospaf.Account) {
+	account.Load()
 	fmt.Println("Account remaining: ", account.GetRemains())
 	test_user := "initlove"
 	url := fmt.Sprintf("https://api.github.com/users/%s", test_user)
@@ -23,10 +22,9 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Println(accounts)
 		for index := 0; index < len(accounts); index++ {
 			fmt.Println("\nType: ", accounts[index].Type, " Name: ", accounts[index].User)
-			AccountTest(accounts[index].Type, accounts[index].User, accounts[index].Password)
+			AccountTest(accounts[index])
 		}
 	}
 }

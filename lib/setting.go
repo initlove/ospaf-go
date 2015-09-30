@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 )
 
+//TODO: use /etc or /home?
 func LoadAccounts(confIn string) ([]Account, error) {
 	var accounts []Account
 	var conf string
