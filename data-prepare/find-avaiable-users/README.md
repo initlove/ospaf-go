@@ -1,5 +1,5 @@
 ##How to use
-- Add your own (accounts.json](#accounts.json)
+- Add your own [accounts.json](#accounts.json)
 - Modify the .go file (change 'level' and 'charSet' if you like)
 - Make and Run
 
