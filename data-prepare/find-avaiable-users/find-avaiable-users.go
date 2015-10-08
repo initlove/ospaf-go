@@ -12,15 +12,37 @@ func main() {
 		return
 	}
 
-	chars := "abcdefghijklmnopqrstuvwxyz"
+	level := 3
+	charSet := "abcdefghijklmnopqrstuvwxyz"
+	array := make([]int, level)
+	for index := 0; index < level; index++ {
+		array[index] = 0
+	}
 
-	for a_index := 0; a_index < len(chars); a_index++ {
-		url := fmt.Sprintf("https://api.github.com/users/ab%c", chars[a_index])
+	for out := false; out == false; {
+		var value string
+		for index := 0; index < level; index++ {
+			value = fmt.Sprintf("%c", charSet[array[index]]) + value
+		}
+		url := fmt.Sprintf("https://api.github.com/users/%s", value)
 		_, statusCode := pool.ReadURL(url, "")
 		if statusCode == -1 {
 			return
+		} else if statusCode != 200 {
+			fmt.Println(value, statusCode)
 		}
-		fmt.Println("ab", chars[a_index], statusCode)
-	}
 
+		array[0]++
+		for pos := 0; pos < level; pos++ {
+			if array[pos] == len(charSet) {
+				array[pos] = 0
+				if pos+1 < level {
+					array[pos+1]++
+				} else {
+					out = true
+					break
+				}
+			}
+		}
+	}
 }
