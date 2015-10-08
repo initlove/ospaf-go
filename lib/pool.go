@@ -44,7 +44,7 @@ func (pool *Pool) ReadURL(url string, param string) (string, int) {
 	if index == -1 {
 		return "No avaiable account in the pool", -1
 	} else {
-		fmt.Println("Using ", pool.Accounts[index].User)
+		//	fmt.Println("Using ", pool.Accounts[index].User)
 	}
 	return pool.Accounts[index].ReadURL(url, param)
 }
