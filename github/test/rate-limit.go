@@ -35,7 +35,7 @@ func readFile() {
 	dataFile := "data/rate-limit.json"
 	dataValue, err := ospaf.ReadFile(dataFile)
 	if err == nil {
-		valid, rateLimit := github.RateLimitFrom(dataValue)
+		rateLimit, valid := github.RateLimitFrom(dataValue)
 		if valid {
 			fmt.Println(rateLimit.Marshal())
 		} else {
@@ -57,7 +57,7 @@ func readURL() {
 	if err != nil {
 		return
 	}
-	valid, rateLimit := github.RateLimitFrom(string(resp_body))
+	rateLimit, valid := github.RateLimitFrom(string(resp_body))
 	if valid {
 		fmt.Println(rateLimit.Marshal())
 	} else {
