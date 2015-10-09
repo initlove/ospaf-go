@@ -25,7 +25,7 @@ func main() {
 			value = fmt.Sprintf("%c", charSet[array[index]]) + value
 		}
 		url := fmt.Sprintf("https://api.github.com/users/%s", value)
-		_, statusCode := pool.ReadURL(url, "")
+		_, statusCode := pool.ReadURL(url, nil)
 		if statusCode == -1 {
 			return
 		} else if statusCode != 200 {

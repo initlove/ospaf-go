@@ -1,5 +1,4 @@
-##Find Avaiable User by List
-Find the avaiable user by the word list.
+##Find issue and comment by repo
 
 ##How to use
 - Add your own [accounts.json](#accounts.json)

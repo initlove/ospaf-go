@@ -28,7 +28,7 @@ func (account *Account) Init(accountType string, accountUser string, accountPass
 
 func (account *Account) Load() {
 	url := "https://api.github.com/rate_limit"
-	val, code := account.ReadURL(url, "")
+	val, code := account.ReadURL(url, nil)
 	fmt.Println("load account", val)
 	if code == 200 {
 		rl, ok := github.RateLimitFrom(val)
@@ -75,8 +75,21 @@ func (account *Account) _GetRequest(url string) (resp *http.Response, resp_body 
 	return resp, resp_body, nil
 }
 
-func (account *Account) ReadURL(url string, param string) (string, int) {
-	resp, resp_body, err := account._GetRequest(url)
+func (account *Account) ReadURL(url string, param map[string]string) (string, int) {
+	var new_url string
+	if param != nil {
+		for key, value := range param {
+			if new_url == "" {
+				new_url = fmt.Sprintf("%s?%s=%s", url, key, value)
+			} else {
+				new_url = fmt.Sprintf("%s&%s=%s", new_url, key, value)
+			}
+		}
+	}
+	if new_url == "" {
+		new_url = url
+	}
+	resp, resp_body, err := account._GetRequest(new_url)
 
 	if err != nil {
 		return err.Error(), -1
@@ -85,8 +98,21 @@ func (account *Account) ReadURL(url string, param string) (string, int) {
 }
 
 //Return next page and the end page
-func (account *Account) ReadPage(url string, page int) (body string, statusCode int, nextPage int, endPage int) {
-	new_url := fmt.Sprintf("%s?page=%d", url, page)
+func (account *Account) ReadPage(url string, param map[string]string) (body string, statusCode int, nextPage int, endPage int) {
+	var new_url string
+	if param != nil {
+		for key, value := range param {
+			if new_url == "" {
+				new_url = fmt.Sprintf("%s?%s=%s", url, key, value)
+			} else {
+				new_url = fmt.Sprintf("%s&%s=%s", new_url, key, value)
+			}
+		}
+	}
+	if new_url == "" {
+		new_url = url
+	}
+	fmt.Println(new_url)
 	resp, resp_body, err := account._GetRequest(new_url)
 
 	if err != nil {

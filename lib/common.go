@@ -2,8 +2,11 @@ package ospafLib
 
 import (
 	"bytes"
+	"crypto/md5"
 	"fmt"
+	"io"
 	"os"
+	"path"
 	"regexp"
 	"strconv"
 	"strings"
@@ -41,4 +44,35 @@ func GetPageMap(link string) (pageMap map[string]int) {
 	}
 
 	return pageMap
+}
+
+func MD5(data string) (val string) {
+	t := md5.New()
+	io.WriteString(t, data)
+	return fmt.Sprintf("%x", t.Sum(nil))
+}
+
+//WHen filename is null, we just want to prepare a pure directory
+func PreparePath(cachename string, filename string) (realurl string) {
+	var dir string
+	if filename == "" {
+		dir = cachename
+	} else {
+		realurl = path.Join(cachename, filename)
+		dir = path.Dir(realurl)
+	}
+	p, err := os.Stat(dir)
+	if err != nil {
+		if !os.IsExist(err) {
+			os.MkdirAll(dir, 0777)
+		}
+	} else {
+		if p.IsDir() {
+			return realurl
+		} else {
+			os.Remove(dir)
+			os.MkdirAll(dir, 0777)
+		}
+	}
+	return realurl
 }

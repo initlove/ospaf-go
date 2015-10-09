@@ -11,7 +11,7 @@ import (
 
 func processLine(value string, pool ospaf.Pool) int {
 	url := fmt.Sprintf("https://api.github.com/users/%s", value)
-	_, statusCode := pool.ReadURL(url, "")
+	_, statusCode := pool.ReadURL(url, nil)
 	if statusCode == -1 {
 		return -1
 	} else if statusCode != 200 {
