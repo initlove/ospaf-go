@@ -18,7 +18,7 @@ func main() {
 	for index := 0; index < level; index++ {
 		array[index] = 0
 	}
-
+	array[2] = 7
 	for out := false; out == false; {
 		var value string
 		for index := 0; index < level; index++ {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 type Account struct {
@@ -41,11 +42,7 @@ func (account *Account) GetRemains() int {
 	return account.Remains
 }
 
-func (account *Account) ReadURL(url string, param string) (string, int) {
-	if url != "https://api.github.com/rate_limit" && account.Remains < 10 {
-		return "System warning: not enough remain access", -1
-	}
-
+func (account *Account) _GetRequest(url string) (resp *http.Response, resp_body []byte, err error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	switch account.Type {
@@ -53,19 +50,62 @@ func (account *Account) ReadURL(url string, param string) (string, int) {
 		req.SetBasicAuth(account.User, account.Password)
 		break
 	}
-	resp, err := client.Do(req)
+	resp, err = client.Do(req)
 	if err != nil {
-		return err.Error(), -1
+		return resp, resp_body, err
 	}
 	defer resp.Body.Close()
-	resp_body, err := ioutil.ReadAll(resp.Body)
+	resp_body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err.Error(), -1
+		return resp, resp_body, err
+	}
+
+	if v, ok := resp.Header["X-Ratelimit-Remaining"]; ok {
+		xRemains, err := strconv.Atoi(v[0])
+		if err != nil {
+			account.Remains = xRemains
+			return resp, resp_body, nil
+		}
 	}
 
 	if url != "https://api.github.com/rate_limit" {
 		account.Remains -= 1
 	}
 
+	return resp, resp_body, nil
+}
+
+func (account *Account) ReadURL(url string, param string) (string, int) {
+	resp, resp_body, err := account._GetRequest(url)
+
+	if err != nil {
+		return err.Error(), -1
+	}
 	return string(resp_body), resp.StatusCode
+}
+
+//Return next page and the end page
+func (account *Account) ReadPage(url string, page int) (body string, statusCode int, nextPage int, endPage int) {
+	new_url := fmt.Sprintf("%s?page=%d", url, page)
+	resp, resp_body, err := account._GetRequest(new_url)
+
+	if err != nil {
+		return err.Error(), -1, -1, -1
+	}
+
+	body = string(resp_body)
+	statusCode = resp.StatusCode
+	nextPage = -1
+	endPage = -1
+	if v, ok := resp.Header["Link"]; ok {
+		pageMap := GetPageMap(v[0])
+		if val, ok := pageMap["next"]; ok {
+			nextPage = val
+		}
+		if val, ok := pageMap["last"]; ok {
+			endPage = val
+		}
+	}
+
+	return body, statusCode, nextPage, endPage
 }

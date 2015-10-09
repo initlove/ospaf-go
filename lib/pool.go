@@ -48,3 +48,13 @@ func (pool *Pool) ReadURL(url string, param string) (string, int) {
 	}
 	return pool.Accounts[index].ReadURL(url, param)
 }
+
+func (pool *Pool) ReadPage(url string, page int) (string, int, int, int) {
+	index := pool.PickAccount()
+	if index == -1 {
+		return "No avaiable account in the pool", -1, -1, -1
+	} else {
+		//	fmt.Println("Using ", pool.Accounts[index].User)
+	}
+	return pool.Accounts[index].ReadPage(url, page)
+}
