@@ -14,7 +14,7 @@ type Config struct {
 	Repo  string
 }
 
-func loadComments(url string, pool ospaf.Pool) {
+func loadComments(url string, pool ospaf.Pool, config Config, number int) {
 	fmt.Println("Start to load: ", url)
 
 	var commentList []github.Comment
@@ -34,7 +34,7 @@ func loadComments(url string, pool ospaf.Pool) {
 		}
 	}
 
-	fileUrl := fmt.Sprintf("data/comment-of-issue-%s", ospaf.MD5(url))
+	fileUrl := fmt.Sprintf("data/comment-of-issue-%s-%s-%d", config.Owner, config.Repo, number)
 	content, _ := json.MarshalIndent(commentList, "", "  ")
 	fout, err := os.Create(fileUrl)
 	if err != nil {
@@ -87,11 +87,11 @@ func main() {
 			}
 			issueList = append(issueList, issues[index])
 			commentUrl := issues[index].Comments_url
-			loadComments(commentUrl, pool)
+			loadComments(commentUrl, pool, config, issues[index].Number)
 		}
 	}
 
-	fileUrl := fmt.Sprintf("data/issue-of-repo-%s", ospaf.MD5(url))
+	fileUrl := fmt.Sprintf("data/issue-of-%s-%s", config.Owner, config.Repo)
 	ilContent, _ := json.MarshalIndent(issueList, "", "  ")
 	fout, err := os.Create(fileUrl)
 	if err != nil {

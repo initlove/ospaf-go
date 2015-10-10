@@ -46,6 +46,17 @@ func GetPageMap(link string) (pageMap map[string]int) {
 	return pageMap
 }
 
+//testStr := "https://github.com/opencontainers/specs/pull/207#issuecomment-144513552"
+func GetIssueID(link string) int {
+	val := -1
+	re, _ := regexp.Compile("pull/(\\d+)#issuecomment")
+	result := re.FindStringSubmatch(link)
+	if len(result) == 2 {
+		val, _ = strconv.Atoi(result[1])
+	}
+	return val
+}
+
 func MD5(data string) (val string) {
 	t := md5.New()
 	io.WriteString(t, data)
