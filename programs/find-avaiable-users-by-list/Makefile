@@ -1,4 +1,7 @@
-all:
-	go build find-avaiable-users-by-list.go
+all: collect
+
+collect: collect.go
+	go build collect.go
+
 clean:
-	rm find-avaiable-users-by-list
+	rm collect

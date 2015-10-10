@@ -9,7 +9,7 @@ Two parameters: level(how many chars), charSet(the char set).
 
 ```
 make
-./find-avaiable-users-by-compose > output
+./collect > output
 ``` 
 
 ##accounts.json

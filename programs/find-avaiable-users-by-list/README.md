@@ -7,7 +7,7 @@ Find the avaiable user by the word list.
 
 ```
 make
-./find-avaiable-users-by-list > output
+./collect > output
 ``` 
 
 ##accounts.json
