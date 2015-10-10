@@ -9,6 +9,11 @@ import (
 	"strconv"
 )
 
+type Config struct {
+	Owner string
+	Repo  string
+}
+
 func loadComments(url string, pool ospaf.Pool) {
 	fmt.Println("Start to load: ", url)
 
@@ -50,9 +55,16 @@ func main() {
 
 	ospaf.PreparePath("data", "")
 
-	owner := "fakeowner"
-	repo := "fakerepo"
-	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/issues", owner, repo)
+	content, err := ospaf.ReadFile("./config.json")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	var config Config
+	json.Unmarshal([]byte(content), &config)
+
+	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/issues", config.Owner, config.Repo)
 	paras := make(map[string]string)
 	paras["state"] = "all"
 
@@ -80,12 +92,12 @@ func main() {
 	}
 
 	fileUrl := fmt.Sprintf("data/issue-of-repo-%s", ospaf.MD5(url))
-	content, _ := json.MarshalIndent(issueList, "", "  ")
+	ilContent, _ := json.MarshalIndent(issueList, "", "  ")
 	fout, err := os.Create(fileUrl)
 	if err != nil {
 		fmt.Println(fileUrl, err)
 	} else {
-		fout.WriteString(string(content))
+		fout.WriteString(string(ilContent))
 		fmt.Println("Save ", url, " to ", fileUrl)
 		fout.Close()
 	}
