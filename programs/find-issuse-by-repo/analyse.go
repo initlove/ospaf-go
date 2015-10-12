@@ -256,7 +256,7 @@ func main() {
 	var config Config
 	json.Unmarshal([]byte(content), &config)
 
-	fileUrl := fmt.Sprintf("data/issue-of-%s-%s", config.Owner, config.Repo)
+	fileUrl := fmt.Sprintf("data-%s-%s/issue", config.Owner, config.Repo)
 	content, err = ospaf.ReadFile(fileUrl)
 	if err != nil {
 		fmt.Println(err)
@@ -269,7 +269,7 @@ func main() {
 	var commentList []github.Comment
 	for index := 0; index < len(issueList); index++ {
 		issue := issueList[index]
-		fileUrl = fmt.Sprintf("data/comment-of-issue-%s-%s-%d", config.Owner, config.Repo, issue.Number)
+		fileUrl = fmt.Sprintf("data-%s-%s/comment-of-issue-%d", config.Owner, config.Repo, issue.Number)
 		content, err = ospaf.ReadFile(fileUrl)
 		if err != nil {
 			continue
@@ -282,14 +282,14 @@ func main() {
 		}
 	}
 
-	ospaf.PreparePath("report", "")
+	ospaf.PreparePath(fmt.Sprintf("report-%s-%s", config.Owner, config.Repo), "")
 
-	fileUrl = fmt.Sprintf("report/open-issue-%s-%s", config.Owner, config.Repo)
+	fileUrl = fmt.Sprintf("report-%s-%s/open-issue", config.Owner, config.Repo)
 	openIssueReport(issueList, fileUrl)
 
-	fileUrl = fmt.Sprintf("report/issue-comment-%s-%s", config.Owner, config.Repo)
+	fileUrl = fmt.Sprintf("report-%s-%s/issue-comment", config.Owner, config.Repo)
 	issueCommentReport(commentList, fileUrl)
 
-	fileUrl = fmt.Sprintf("report/impact-comment-%s-%s", config.Owner, config.Repo)
+	fileUrl = fmt.Sprintf("report-%s-%s/impact-comment", config.Owner, config.Repo)
 	impactReport(issueList, commentList, fileUrl)
 }

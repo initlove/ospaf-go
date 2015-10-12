@@ -34,7 +34,7 @@ func loadComments(url string, pool ospaf.Pool, config Config, number int) {
 		}
 	}
 
-	fileUrl := fmt.Sprintf("data/comment-of-issue-%s-%s-%d", config.Owner, config.Repo, number)
+	fileUrl := fmt.Sprintf("data-%s-%s/comment-of-issue-%d", config.Owner, config.Repo, number)
 	content, _ := json.MarshalIndent(commentList, "", "  ")
 	fout, err := os.Create(fileUrl)
 	if err != nil {
@@ -53,8 +53,6 @@ func main() {
 		return
 	}
 
-	ospaf.PreparePath("data", "")
-
 	content, err := ospaf.ReadFile("./config.json")
 	if err != nil {
 		fmt.Println(err)
@@ -63,6 +61,8 @@ func main() {
 
 	var config Config
 	json.Unmarshal([]byte(content), &config)
+
+	ospaf.PreparePath(fmt.Sprintf("data-%s-%s", config.Owner, config.Repo), "")
 
 	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/issues", config.Owner, config.Repo)
 	paras := make(map[string]string)
@@ -91,7 +91,7 @@ func main() {
 		}
 	}
 
-	fileUrl := fmt.Sprintf("data/issue-of-%s-%s", config.Owner, config.Repo)
+	fileUrl := fmt.Sprintf("data-%s-%s/issue", config.Owner, config.Repo)
 	ilContent, _ := json.MarshalIndent(issueList, "", "  ")
 	fout, err := os.Create(fileUrl)
 	if err != nil {
